@@ -16,7 +16,12 @@ if (process.env.DB_URL) {
     },
   });
 
-  sequelize.createSchema(process.env.DB_NAME);
+  sequelize.showAllSchemas().then((schemas) => {
+    console.log(schemas);
+    if (!schemas.includes(process.env.DB_NAME)) {
+      sequelize.createSchema(process.env.DB_NAME);
+    }
+  });
 } else {
   sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -25,8 +30,21 @@ if (process.env.DB_URL) {
     {
       host: 'localhost',
       dialect: 'postgres',
+      hooks: {
+        beforeDefine: function (columns, model) {
+          if (!model.schema) {
+            model.schema = process.env.DB_NAME;
+          }
+        },
+      },
     }
   );
+  sequelize.showAllSchemas().then((schemas) => {
+    console.log(schemas);
+    if (!schemas.includes(process.env.DB_NAME)) {
+      sequelize.createSchema(process.env.DB_NAME);
+    }
+  });
 }
 
 module.exports = sequelize;
