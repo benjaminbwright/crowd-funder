@@ -9,7 +9,9 @@ if (process.env.DB_URL) {
   sequelize = new Sequelize(process.env.DB_URL, {
     hooks: {
       beforeDefine: function (columns, model) {
-        model.tableName = `${process.env.DB_NAME}_${model.name.singular}`;
+        if (!model.schema) {
+          model.schema = process.env.DB_NAME;
+        }
       },
     },
   });
