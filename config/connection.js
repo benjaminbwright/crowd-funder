@@ -15,6 +15,8 @@ if (process.env.DB_URL) {
       },
     },
   });
+
+  sequelize.createSchema(process.env.DB_NAME);
 } else {
   sequelize = new Sequelize(
     process.env.DB_NAME,
